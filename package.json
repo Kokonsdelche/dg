@@ -18,7 +18,8 @@
                 "list-backups": "node database/backup-restore.js list",
                 "setup-complete": "npm run install-deps && npm run init-db && cd server && npm run setup",
                 "production": "cd client && npm run build && cd ../server && npm start",
-                "heroku-postbuild": "npm run install-deps && npm run build"
+                "heroku-postbuild": "npm run install-deps && npm run build",
+                "vercel-build": "cd client && npm install && npm run build"
         },
         "keywords": [
                 "shop",
@@ -35,8 +36,7 @@
         "devDependencies": {
                 "concurrently": "^8.2.2"
         },
-        "dependencies": {
-                "dotenv": "^16.5.0",
-                "mongoose": "^8.15.1"
+        "engines": {
+                "node": ">=18.0.0"
         }
 }
