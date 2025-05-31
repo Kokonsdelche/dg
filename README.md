@@ -10,6 +10,8 @@
 
 **فروشگاه آنلاین تخصصی شال و روسری با پنل مدیریت کامل**
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Kokonsdelche/dg&project-name=shal-roosari-shop&repository-name=shal-roosari-shop)
+
 [🌐 Demo](#) | [📖 مستندات](#مستندات) | [🐛 گزارش مشکل](https://github.com/your-username/shal-roosari-shop/issues) | [💡 پیشنهادات](https://github.com/your-username/shal-roosari-shop/issues)
 
 </div>
