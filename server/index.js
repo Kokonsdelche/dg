@@ -39,10 +39,7 @@ app.get('/', (req, res) => {
 });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/shal-roosari-shop', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/shal-roosari-shop')
 .then(() => console.log('اتصال به MongoDB برقرار شد'))
 .catch(err => console.error('خطا در اتصال به MongoDB:', err));
 
