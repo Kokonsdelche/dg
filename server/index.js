@@ -6,8 +6,21 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS configuration for Vercel frontend
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'https://dg-gamma-flax.vercel.app',
+    'https://dg-git-main-koroshs-projects-20aecca8.vercel.app',
+    'https://dg-e824grrlo-koroshs-projects-20aecca8.vercel.app',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
