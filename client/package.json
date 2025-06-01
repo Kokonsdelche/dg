@@ -37,7 +37,7 @@
     "react-hook-form": "^7.56.4",
     "react-hot-toast": "^2.5.2",
     "react-image-crop": "^11.0.10",
-    "react-quill": "^2.0.0",
+    "react-quill-new": "^3.4.6",
     "react-rating": "^2.0.5",
     "react-router-dom": "^7.6.1",
     "react-scripts": "^5.0.1",
