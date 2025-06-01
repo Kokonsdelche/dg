@@ -57,7 +57,7 @@ const Login: React.FC = () => {
         // پیش‌پر کردن فیلدها برای تست سریع
         const fillAdminCredentials = () => {
                 setEmail('admin@shal-roosari.com');
-                setPassword('admin123');
+                setPassword('admin123456');
         };
 
         return (

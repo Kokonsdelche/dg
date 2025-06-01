@@ -33,7 +33,8 @@ apiClient.interceptors.response.use(
                         // Handle unauthorized access
                         localStorage.removeItem('adminToken');
                         localStorage.removeItem('token');
-                        window.location.href = '/admin/login';
+                        localStorage.removeItem('user');
+                        window.location.href = '/login';
                 }
                 return Promise.reject(error);
         }
