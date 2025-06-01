@@ -1,0 +1,14 @@
+{
+        "version": 2,
+        "name": "shal-roosari-shop",
+        "framework": "create-react-app",
+        "buildCommand": "npm run build",
+        "outputDirectory": "build",
+        "installCommand": "npm install",
+        "routes": [
+                {
+                        "src": "/(.*)",
+                        "dest": "/index.html"
+                }
+        ]
+}
