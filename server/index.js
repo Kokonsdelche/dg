@@ -13,9 +13,13 @@ const corsOptions = {
     'https://dg-gamma-flax.vercel.app',
     'https://dg-git-main-koroshs-projects-20aecca8.vercel.app',
     'https://dg-e824grrlo-koroshs-projects-20aecca8.vercel.app',
+    'https://dg-bimyr6iw8-koroshs-projects-20aecca8.vercel.app',
+    'https://dg-production-c1df.up.railway.app',
     process.env.CLIENT_URL
   ].filter(Boolean),
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   optionsSuccessStatus: 200
 };
 
