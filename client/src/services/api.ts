@@ -1,7 +1,21 @@
 import axios from 'axios';
 import { AuthResponse, User, Product, Order, CartItem, Address } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://dg-production-c1df.up.railway.app/api';
+// Try Railway first, fallback to localhost for development
+const getApiBaseUrl = () => {
+        const envUrl = process.env.REACT_APP_API_URL;
+        if (envUrl) return envUrl;
+
+        // Check if we're in development
+        if (process.env.NODE_ENV === 'development') {
+                return 'http://localhost:5000/api';
+        }
+
+        // Production fallback
+        return 'https://dg-production-c1df.up.railway.app/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const apiClient = axios.create({
         baseURL: API_BASE_URL,
@@ -30,6 +44,16 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
         (response) => response,
         (error) => {
+                // Handle CORS and network errors
+                if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
+                        console.error('Network/CORS Error:', error.message);
+                        // You could show a user-friendly message here
+                        return Promise.reject({
+                                ...error,
+                                message: 'خطا در اتصال به سرور. لطفاً بعداً تلاش کنید.'
+                        });
+                }
+
                 if (error.response?.status === 401) {
                         // Handle unauthorized access
                         localStorage.removeItem('adminToken');
