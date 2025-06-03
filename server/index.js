@@ -36,11 +36,20 @@ console.log('🌐 CORS origins:', corsOptions.origin);
 
 // Middleware
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files for uploads
 app.use('/uploads', express.static('uploads'));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('❌ Server Error:', err);
+  res.status(500).json({ 
+    message: 'خطای سرور', 
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
+  });
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -64,12 +73,22 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
   });
 });
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/shal-roosari-shop')
+// Catch all route
+app.get('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// MongoDB connection with better error handling
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/shal-roosari-shop', {
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+})
 .then(() => {
   console.log('✅ اتصال به MongoDB برقرار شد');
   console.log('📊 Database connected successfully');
@@ -77,10 +96,57 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/shal-roosar
 .catch(err => {
   console.error('❌ خطا در اتصال به MongoDB:', err);
   console.error('💥 MongoDB connection failed:', err.message);
+  process.exit(1);
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+// Handle MongoDB connection events
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+// Start server
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 سرور در پورت ${PORT} راه‌اندازی شد`);
   console.log(`🌍 Server running on http://0.0.0.0:${PORT}`);
   console.log('✅ Server startup completed');
+});
+
+// Graceful shutdown
+const gracefulShutdown = (signal) => {
+  console.log(`\n⚠️ Received ${signal}. Starting graceful shutdown...`);
+  
+  server.close(() => {
+    console.log('🔴 HTTP server closed');
+    
+    mongoose.connection.close(false, () => {
+      console.log('🔴 MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+  
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.log('⚠️ Force closing after 10 seconds');
+    process.exit(1);
+  }, 10000);
+};
+
+// Handle different termination signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+  gracefulShutdown('UNCAUGHT_EXCEPTION');
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  gracefulShutdown('UNHANDLED_REJECTION');
 }); 
