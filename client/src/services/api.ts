@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AuthResponse, User, Product, Order, CartItem, Address } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://dg-production-c1df.up.railway.app/api';
 
 const apiClient = axios.create({
         baseURL: API_BASE_URL,
@@ -9,6 +9,7 @@ const apiClient = axios.create({
         headers: {
                 'Content-Type': 'application/json',
         },
+        withCredentials: true
 });
 
 // Request interceptor to add auth token
