@@ -55,33 +55,46 @@ const productRoutes = require('../server/routes/products');
 const orderRoutes = require('../server/routes/orders');
 const adminRoutes = require('../server/routes/admin');
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/admin', adminRoutes);
+// Routes (without /api prefix since Vercel already handles that)
+app.use('/auth', authRoutes);
+app.use('/products', productRoutes);
+app.use('/orders', orderRoutes);
+app.use('/admin', adminRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    platform: 'vercel-serverless'
+    platform: 'vercel-serverless',
+    mongoStatus: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
 // Root route
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
   res.json({ 
     message: 'سرور فروشگاه شال و روسری - Vercel API',
     status: 'running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      '/health',
+      '/auth/register',
+      '/auth/login',
+      '/products',
+      '/orders',
+      '/admin'
+    ]
   });
 });
 
-// Catch all API route
-app.get('/api/*', (req, res) => {
-  res.status(404).json({ message: 'API endpoint not found' });
+// Catch all route
+app.get('*', (req, res) => {
+  res.status(404).json({ 
+    message: 'API endpoint not found',
+    path: req.path,
+    method: req.method
+  });
 });
 
 // Export handler for Vercel
