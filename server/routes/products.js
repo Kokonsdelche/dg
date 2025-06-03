@@ -4,6 +4,65 @@ const { auth, optionalAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Get featured products - MUST be before /:id route
+router.get('/featured/list', async (req, res) => {
+  try {
+    const products = await Product.find({ isFeatured: true, isActive: true })
+      .limit(8)
+      .sort({ soldCount: -1 })
+      .select('-reviews');
+
+    res.json({ products });
+  } catch (error) {
+    console.error('خطا در دریافت محصولات ویژه:', error);
+    res.status(500).json({ message: 'خطای سرور' });
+  }
+});
+
+// Get categories - MUST be before /:id route
+router.get('/categories/list', async (req, res) => {
+  try {
+    const categories = await Product.distinct('category', { isActive: true });
+    res.json({ categories });
+  } catch (error) {
+    console.error('خطا در دریافت دسته‌بندی‌ها:', error);
+    res.status(500).json({ message: 'خطای سرور' });
+  }
+});
+
+// Search products - MUST be before /:id route
+router.get('/search/:query', async (req, res) => {
+  try {
+    const { query } = req.params;
+    const { page = 1, limit = 12 } = req.query;
+
+    const products = await Product.find({
+      $text: { $search: query },
+      isActive: true
+    })
+    .sort({ score: { $meta: 'textScore' } })
+    .limit(limit * 1)
+    .skip((page - 1) * limit)
+    .select('-reviews');
+
+    const total = await Product.countDocuments({
+      $text: { $search: query },
+      isActive: true
+    });
+
+    res.json({
+      products,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      total,
+      query
+    });
+  } catch (error) {
+    console.error('خطا در جستجو:', error);
+    res.status(500).json({ message: 'خطای سرور' });
+  }
+});
+
 // Get all products with filters and pagination
 router.get('/', optionalAuth, async (req, res) => {
   try {
@@ -67,7 +126,7 @@ router.get('/', optionalAuth, async (req, res) => {
   }
 });
 
-// Get product by ID
+// Get product by ID - MUST be after specific routes
 router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
@@ -83,32 +142,6 @@ router.get('/:id', optionalAuth, async (req, res) => {
     res.json({ product });
   } catch (error) {
     console.error('خطا در دریافت محصول:', error);
-    res.status(500).json({ message: 'خطای سرور' });
-  }
-});
-
-// Get featured products
-router.get('/featured/list', async (req, res) => {
-  try {
-    const products = await Product.find({ isFeatured: true, isActive: true })
-      .limit(8)
-      .sort({ soldCount: -1 })
-      .select('-reviews');
-
-    res.json({ products });
-  } catch (error) {
-    console.error('خطا در دریافت محصولات ویژه:', error);
-    res.status(500).json({ message: 'خطای سرور' });
-  }
-});
-
-// Get categories
-router.get('/categories/list', async (req, res) => {
-  try {
-    const categories = await Product.distinct('category', { isActive: true });
-    res.json({ categories });
-  } catch (error) {
-    console.error('خطا در دریافت دسته‌بندی‌ها:', error);
     res.status(500).json({ message: 'خطای سرور' });
   }
 });
@@ -156,39 +189,6 @@ router.post('/:id/reviews', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('خطا در ثبت نظر:', error);
-    res.status(500).json({ message: 'خطای سرور' });
-  }
-});
-
-// Search products
-router.get('/search/:query', async (req, res) => {
-  try {
-    const { query } = req.params;
-    const { page = 1, limit = 12 } = req.query;
-
-    const products = await Product.find({
-      $text: { $search: query },
-      isActive: true
-    })
-    .sort({ score: { $meta: 'textScore' } })
-    .limit(limit * 1)
-    .skip((page - 1) * limit)
-    .select('-reviews');
-
-    const total = await Product.countDocuments({
-      $text: { $search: query },
-      isActive: true
-    });
-
-    res.json({
-      products,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
-      total,
-      query
-    });
-  } catch (error) {
-    console.error('خطا در جستجو:', error);
     res.status(500).json({ message: 'خطای سرور' });
   }
 });
