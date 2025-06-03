@@ -12,6 +12,7 @@ const getApiBaseUrl = () => {
         }
 
         // Production - try Render first, then Railway as fallback
+        // Update this URL with your actual Render service URL
         return 'https://dg-backend.onrender.com/api';
 };
 
