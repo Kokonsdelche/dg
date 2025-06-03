@@ -1,8 +1,11 @@
 [build]
 builder = "nixpacks"
 
+[build.nixpacksOptions]
+node = "16"
+
 [deploy]
-startCommand = "cd server && node index.js"
+startCommand = "cd server && npm install --production && node index.js"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "always"
