@@ -14,7 +14,7 @@ console.log('- MONGO_URI:', process.env.MONGO_URI ? 'Set ✅' : 'Not set ❌');
 console.log('- JWT_SECRET:', process.env.JWT_SECRET ? 'Set ✅' : 'Not set ❌');
 console.log('- CLIENT_URL:', process.env.CLIENT_URL || 'Not set');
 
-// CORS configuration for Vercel frontend
+// CORS configuration for Vercel frontend and Render backend
 const corsOptions = {
   origin: [
     'http://localhost:3000',
@@ -23,6 +23,7 @@ const corsOptions = {
     'https://dg-e824grrlo-koroshs-projects-20aecca8.vercel.app',
     'https://dg-bimyr6iw8-koroshs-projects-20aecca8.vercel.app',
     'https://dg-production-c1df.up.railway.app',
+    'https://dg-backend.onrender.com',
     process.env.CLIENT_URL
   ].filter(Boolean),
   credentials: true,

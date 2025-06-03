@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AuthResponse, User, Product, Order, CartItem, Address } from '../types';
 
-// Try Railway first, fallback to localhost for development
+// Try different backend services with fallback
 const getApiBaseUrl = () => {
         const envUrl = process.env.REACT_APP_API_URL;
         if (envUrl) return envUrl;
@@ -11,8 +11,8 @@ const getApiBaseUrl = () => {
                 return 'http://localhost:5000/api';
         }
 
-        // Production fallback
-        return 'https://dg-production-c1df.up.railway.app/api';
+        // Production - try Render first, then Railway as fallback
+        return 'https://dg-backend.onrender.com/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
