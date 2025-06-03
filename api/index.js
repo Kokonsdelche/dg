@@ -98,10 +98,27 @@ app.get('*', (req, res) => {
 });
 
 // Export handler for Vercel
-module.exports = async (req, res) => {
-  // Connect to database
-  await connectToDatabase();
-  
-  // Handle the request
-  return app(req, res);
-}; 
+export default async function handler(req, res) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  return res.status(200).json({
+    message: 'سرور فروشگاه شال و روسری - Vercel API',
+    status: 'running',
+    timestamp: new Date().toISOString(),
+    platform: 'vercel-serverless',
+    endpoints: [
+      '/api/health - Health check',
+      '/api/auth/* - Authentication endpoints',
+      '/api/products/* - Product endpoints',
+      '/api/orders/* - Order endpoints',
+      '/api/admin/* - Admin endpoints'
+    ]
+  });
+} 
